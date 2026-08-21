@@ -32,10 +32,13 @@ func validateWord(answer string, testWord string) string {
 	}
 
 	for i, c := range testWordArr {
+		if answerArr[i] == "0" {
+			continue
+		}
 		if slices.Contains(answerArr, c) {
 			result[i] = wrongSpot
 			idx := slices.Index(answerArr, c)
-			answerArr[idx] = "0"
+			answerArr[idx] = "1"
 		}
 	}
 
