@@ -23,9 +23,9 @@ func validateWord(answer string, testWord string) string {
 	incorrect := "⬛️"
 	wrongSpot := "🟨"
 
-	correctStyle := lipgloss.NewStyle().Background(lipgloss.Color("#6CA965"))
-	incorrectStyle := lipgloss.NewStyle().Background(lipgloss.Color("#787C7F"))
-	wrongSpotStyle := lipgloss.NewStyle().Background(lipgloss.Color("#C8B653"))
+	correctStyle := lipgloss.NewStyle().Background(lipgloss.Color("#618C55")).Bold(true)
+	incorrectStyle := lipgloss.NewStyle().Background(lipgloss.Color("#3A3A3C")).Bold(true)
+	wrongSpotStyle := lipgloss.NewStyle().Background(lipgloss.Color("#B2A04C")).Bold(true)
 
 	result := slices.Repeat([]string{incorrect}, 5)
 	resultStr := make([]string, 5)
