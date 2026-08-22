@@ -64,8 +64,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			userInput := m.inputText.Value()
 			if !isValidInput(userInput) {
+				m.messageString = "Invalid Input"
 				return m, nil
 			}
+			m.messageString = ""
 
 			m.inputText.SetValue("")
 			guess, matchWon := checkWord(answer, userInput)
@@ -76,12 +78,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.messageString = "You Won"
 			}
 
-			m.currentGuess++
 			if m.currentGuess >= 5 {
 				m.currentGuess = 5
 				m.matchover = true
 				m.messageString = "You lost, Answer: " + answer
 			}
+			m.currentGuess++
 		}
 	}
 	m.inputText, cmd = m.inputText.Update(msg)
@@ -111,7 +113,14 @@ func (m Model) View() tea.View {
 
 	s += guessBlockStyle.Render(guesses) + "\n\n"
 
-	s += m.inputText.View() + "\n\n"
+	if !m.matchover {
+		s += m.inputText.View() + "\n\n"
+	}
+
+	// if m.messageString != "" {
+	messageStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#618C55")).Align(lipgloss.Center)
+	s += messageStyle.Render(m.messageString) + "\n\n"
+	// }
 
 	footer := "Press Ctrl+c to Quit\n"
 	if m.matchover {
