@@ -11,10 +11,12 @@ import (
 )
 
 type Model struct {
-	title        string
-	guesses      []string
-	currentGuess int
-	inputText    textinput.Model
+	title         string
+	guesses       []string
+	currentGuess  int
+	inputText     textinput.Model
+	matchover     bool
+	messageString string
 }
 
 func InitialModel() Model {
@@ -27,10 +29,12 @@ func InitialModel() Model {
 	ti.SetWidth(25)
 
 	return Model{
-		title:        "WORDLE",
-		guesses:      slices.Repeat([]string{defaultGuess}, 6),
-		currentGuess: 0,
-		inputText:    ti,
+		title:         "WORDLE",
+		guesses:       slices.Repeat([]string{defaultGuess}, 6),
+		currentGuess:  0,
+		inputText:     ti,
+		messageString: "",
+		matchover:     false,
 	}
 }
 
@@ -45,16 +49,38 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
 		switch msg.String() {
+		case "q":
+			if m.matchover {
+				return m, tea.Quit
+			}
+
 		case "ctrl+c":
 			return m, tea.Quit
+
 		case "enter":
+			if m.matchover {
+				return m, nil
+			}
+
 			userInput := m.inputText.Value()
+			if !isValidInput(userInput) {
+				return m, nil
+			}
+
 			m.inputText.SetValue("")
-			m.guesses[m.currentGuess] = validateWord(answer, userInput)
+			guess, matchWon := checkWord(answer, userInput)
+			m.guesses[m.currentGuess] = guess
+
+			if matchWon {
+				m.matchover = true
+				m.messageString = "You Won"
+			}
 
 			m.currentGuess++
-			if m.currentGuess > 5 {
+			if m.currentGuess >= 5 {
 				m.currentGuess = 5
+				m.matchover = true
+				m.messageString = "You lost, Answer: " + answer
 			}
 		}
 	}
@@ -70,7 +96,7 @@ func (m Model) View() tea.View {
 		Align(lipgloss.Center).Bold(true)
 
 	footerStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#606064")).
+		Foreground(lipgloss.Color("#707074")).
 		Margin(0, 2)
 
 	guessBlockStyle := lipgloss.NewStyle().
@@ -87,7 +113,13 @@ func (m Model) View() tea.View {
 
 	s += m.inputText.View() + "\n\n"
 
-	s += footerStyle.Render("Enter to Submit\nCtrl+c to Quit")
+	footer := "Press Ctrl+c to Quit\n"
+	if m.matchover {
+		footer += "Press Q to quit"
+	} else {
+		footer += "Press enter to Submit"
+	}
+	s += footerStyle.Render(footer)
 
 	s = lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder(), true).
