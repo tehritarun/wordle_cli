@@ -10,6 +10,15 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
+var (
+	TITLESTYLE      = lipgloss.NewStyle().Background(lipgloss.Color("#618C55")).Padding(0, 10).Margin(1, 1).Align(lipgloss.Center).Bold(true)
+	FOOTERSTYLE     = lipgloss.NewStyle().Foreground(lipgloss.Color("#707074")).Margin(0, 2)
+	GUESSBLOCKSTYLE = lipgloss.NewStyle().Margin(1, 2)
+	DEFAULTSTYLE    = lipgloss.NewStyle().Background(lipgloss.Color("#3A3A3C"))
+	MESSAGESTYLE    = lipgloss.NewStyle().Foreground(lipgloss.Color("#618C55")).Align(lipgloss.Center).Margin(0, 2)
+	FRAMESTYLE      = lipgloss.NewStyle().Border(lipgloss.RoundedBorder(), true).Padding(1, 2).Margin(1)
+)
+
 type Model struct {
 	title         string
 	guesses       []string
@@ -17,10 +26,11 @@ type Model struct {
 	inputText     textinput.Model
 	matchover     bool
 	messageString string
+	quitting      bool
 }
 
 func InitialModel() Model {
-	defaultGuess := lipgloss.NewStyle().Background(lipgloss.Color("#3A3A3C")).Render(strings.Repeat("  .  ", 5))
+	defaultGuess := DEFAULTSTYLE.Render(strings.Repeat("  .  ", 5))
 
 	ti := textinput.New()
 	ti.Placeholder = "Enter word"
@@ -35,6 +45,7 @@ func InitialModel() Model {
 		inputText:     ti,
 		messageString: "",
 		matchover:     false,
+		quitting:      false,
 	}
 }
 
@@ -51,10 +62,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "q":
 			if m.matchover {
+				m.quitting = true
 				return m, tea.Quit
 			}
 
 		case "ctrl+c":
+			m.quitting = true
 			return m, tea.Quit
 
 		case "enter":
@@ -91,35 +104,25 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() tea.View {
-	titleStyle := lipgloss.NewStyle().
-		Background(lipgloss.Color("#618C55")).
-		Padding(0, 10).
-		Margin(1, 1).
-		Align(lipgloss.Center).Bold(true)
-
-	footerStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#707074")).
-		Margin(0, 2)
-
-	guessBlockStyle := lipgloss.NewStyle().
-		Margin(1, 2)
-
-	s := titleStyle.Render(m.title) + "\n"
+	if m.quitting {
+		byeMsg := MESSAGESTYLE.Render("Have a Nice Day!")
+		return tea.NewView(byeMsg)
+	}
+	s := TITLESTYLE.Render(m.title) + "\n"
 
 	guesses := ""
 	for _, word := range m.guesses {
 		guesses += word + "\n"
 	}
 
-	s += guessBlockStyle.Render(guesses) + "\n\n"
+	s += GUESSBLOCKSTYLE.Render(guesses) + "\n\n"
 
 	if !m.matchover {
 		s += m.inputText.View() + "\n\n"
 	}
 
 	// if m.messageString != "" {
-	messageStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#618C55")).Align(lipgloss.Center)
-	s += messageStyle.Render(m.messageString) + "\n\n"
+	s += MESSAGESTYLE.Render(m.messageString) + "\n\n"
 	// }
 
 	footer := "Press Ctrl+c to Quit\n"
@@ -128,13 +131,9 @@ func (m Model) View() tea.View {
 	} else {
 		footer += "Press enter to Submit"
 	}
-	s += footerStyle.Render(footer)
+	s += FOOTERSTYLE.Render(footer)
 
-	s = lipgloss.NewStyle().
-		Border(lipgloss.RoundedBorder(), true).
-		Padding(1, 2).
-		Margin(1).
-		Render(s)
+	s = FRAMESTYLE.Render(s)
 
 	return tea.NewView(s)
 }
