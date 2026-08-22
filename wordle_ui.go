@@ -106,7 +106,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Model) View() tea.View {
 	if m.quitting {
-		return tea.NewView(MESSAGESTYLE.Render("Have a Nice Day!"))
+		v := tea.NewView("Have a Nice Day!")
+		v.AltScreen = false
+		return v
 	}
 
 	s := TITLESTYLE.Render(m.title) + "\n"
@@ -131,5 +133,7 @@ func (m Model) View() tea.View {
 
 	s = FRAMESTYLE.Render(s)
 
-	return tea.NewView(s)
+	v := tea.NewView(s)
+	v.AltScreen = true
+	return v
 }
