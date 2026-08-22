@@ -89,6 +89,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if matchWon {
 				m.matchover = true
 				m.messageString = "You Won"
+				return m, nil
 			}
 
 			if m.currentGuess >= 5 {
@@ -105,15 +106,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Model) View() tea.View {
 	if m.quitting {
-		byeMsg := MESSAGESTYLE.Render("Have a Nice Day!")
-		return tea.NewView(byeMsg)
+		return tea.NewView(MESSAGESTYLE.Render("Have a Nice Day!"))
 	}
+
 	s := TITLESTYLE.Render(m.title) + "\n"
 
-	guesses := ""
-	for _, word := range m.guesses {
-		guesses += word + "\n"
-	}
+	guesses := strings.Join(m.guesses, "\n")
 
 	s += GUESSBLOCKSTYLE.Render(guesses) + "\n\n"
 
@@ -121,9 +119,7 @@ func (m Model) View() tea.View {
 		s += m.inputText.View() + "\n\n"
 	}
 
-	// if m.messageString != "" {
 	s += MESSAGESTYLE.Render(m.messageString) + "\n\n"
-	// }
 
 	footer := "Press Ctrl+c to Quit\n"
 	if m.matchover {
