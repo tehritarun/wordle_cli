@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	// https://github.com/charmbracelet/bubbletea
+	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 )
@@ -13,14 +14,23 @@ type Model struct {
 	title        string
 	guesses      []string
 	currentGuess int
+	inputText    textinput.Model
 }
 
 func InitialModel() Model {
 	defaultGuess := lipgloss.NewStyle().Background(lipgloss.Color("#3A3A3C")).Render(strings.Repeat("  .  ", 5))
+
+	ti := textinput.New()
+	ti.Placeholder = "Enter word"
+	ti.Focus()
+	ti.CharLimit = 5
+	ti.SetWidth(25)
+
 	return Model{
 		title:        "WORDLE",
 		guesses:      slices.Repeat([]string{defaultGuess}, 6),
 		currentGuess: 0,
+		inputText:    ti,
 	}
 }
 
@@ -28,33 +38,28 @@ func (m Model) Init() tea.Cmd {
 	return nil
 }
 
-var (
-	answer = "PRAWN"
-	words  = []string{
-		"cream",
-		"south",
-		"craft",
-		"blips",
-		"grasp",
-		"prawn",
-	}
-)
+var answer = "PRAWN"
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "ctrl+c":
 			return m, tea.Quit
 		case "enter":
-			m.guesses[m.currentGuess] = validateWord(answer, words[m.currentGuess])
+			userInput := m.inputText.Value()
+			m.inputText.SetValue("")
+			m.guesses[m.currentGuess] = validateWord(answer, userInput)
+
 			m.currentGuess++
 			if m.currentGuess > 5 {
 				m.currentGuess = 5
 			}
 		}
 	}
-	return m, nil
+	m.inputText, cmd = m.inputText.Update(msg)
+	return m, cmd
 }
 
 func (m Model) View() tea.View {
@@ -78,13 +83,16 @@ func (m Model) View() tea.View {
 		guesses += word + "\n"
 	}
 
-	s += guessBlockStyle.Render(guesses) + "\n"
+	s += guessBlockStyle.Render(guesses) + "\n\n"
+
+	s += m.inputText.View() + "\n\n"
 
 	s += footerStyle.Render("Enter to Submit\nCtrl+c to Quit")
 
 	s = lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder(), true).
 		Padding(1, 2).
+		Margin(1).
 		Render(s)
 
 	return tea.NewView(s)
