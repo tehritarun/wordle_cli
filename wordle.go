@@ -1,12 +1,9 @@
 package main
 
 import (
-	"bufio"
-	"math/rand"
-	"os"
+	"math/rand/v2"
 	"slices"
 	"strings"
-	"time"
 	"unicode"
 
 	// https://github.com/charmbracelet/lipgloss
@@ -26,35 +23,9 @@ func isValidInput(userInput string) bool {
 	return true
 }
 
-func chooseWord(filename string) string {
-	file, err := os.Open(filename)
-	if err != nil {
-		panic("enable to read file with words" + err.Error())
-	}
-
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	var pickedWord string
-	lineNum := 0
-	randSource := rand.NewSource(time.Now().UnixNano())
-	randGen := rand.New(randSource)
-
-	for scanner.Scan() {
-		lineNum++
-		line := scanner.Text()
-
-		// Replace current pick with probability 1/lineNum
-		if randGen.Intn(lineNum) == 0 {
-			pickedWord = line
-		}
-	}
-
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
-
-	return pickedWord
+func chooseWord() string {
+	randomIndex := rand.IntN(len(words))
+	return words[randomIndex]
 }
 
 func checkWord(answer string, testWord string) (string, bool) {

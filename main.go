@@ -8,12 +8,7 @@ import (
 )
 
 func main() {
-	filepath := os.Getenv("XDG_DATA_HOME")
-	if filepath == "" {
-		filepath = "~/.local/share"
-	}
-	filepath += "/wordle_cli/words.txt"
-	chosenWord := chooseWord(filepath)
+	chosenWord := chooseWord()
 	if !isValidInput(chosenWord) {
 		panic("Invalid word chosen from word file")
 	}
