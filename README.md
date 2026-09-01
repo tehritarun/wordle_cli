@@ -11,9 +11,11 @@ A stylish, interactive, terminal-based clone of the popular Wordle puzzle game b
 ## ✨ Features
 
 - 🎮 **Classic Wordle Mechanics**: Guess the secret 5-letter word within 6 attempts.
+- 🎲 **Random Word Selection**: Each game randomly selects from a curated list of 1,800+ valid 5-letter words.
 - 🎨 **Modern Terminal UI**: Beautifully rendered using [Bubble Tea v2](https://github.com/charmbracelet/bubbletea) and [Lip Gloss v2](https://github.com/charmbracelet/lipgloss).
 - ⚡ **Instant Visual Feedback**: Clear color-coded feedback highlighting exact matches, misplaced letters, and wrong letters.
 - 🛡️ **Input Validation**: Ensures only valid 5-letter alphabetical inputs are accepted.
+- 📦 **Self-Contained**: All word lists embedded in the binary - no external files required.
 - 🚀 **Cross-Platform**: Compiles to standalone binaries for Linux, macOS, and Windows via GoReleaser.
 
 ---
@@ -117,6 +119,7 @@ wordle_cli/
 ├── main.go                   # Application entry point and program runner
 ├── wordle.go                 # Game validation logic and color matcher
 ├── wordle_ui.go              # Bubble Tea model, update loops, and Lip Gloss views
+├── words.go                  # Embedded word list (1,800+ valid 5-letter words)
 └── README.md                 # Project documentation
 ```
 
