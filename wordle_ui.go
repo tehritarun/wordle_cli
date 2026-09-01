@@ -20,6 +20,7 @@ var (
 )
 
 type Model struct {
+	answer        string
 	title         string
 	guesses       []string
 	currentGuess  int
@@ -29,7 +30,7 @@ type Model struct {
 	quitting      bool
 }
 
-func InitialModel() Model {
+func InitialModel(answer string) Model {
 	defaultGuess := DEFAULTSTYLE.Render(strings.Repeat("  .  ", 5))
 
 	ti := textinput.New()
@@ -39,6 +40,7 @@ func InitialModel() Model {
 	ti.SetWidth(25)
 
 	return Model{
+		answer:        answer,
 		title:         "WORDLE",
 		guesses:       slices.Repeat([]string{defaultGuess}, 6),
 		currentGuess:  0,
@@ -52,8 +54,6 @@ func InitialModel() Model {
 func (m Model) Init() tea.Cmd {
 	return nil
 }
-
-var answer = "PRAWN"
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
@@ -83,7 +83,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.messageString = ""
 
 			m.inputText.SetValue("")
-			guess, matchWon := checkWord(answer, userInput)
+			guess, matchWon := checkWord(m.answer, userInput)
 			m.guesses[m.currentGuess] = guess
 
 			if matchWon {
@@ -95,7 +95,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.currentGuess >= 5 {
 				m.currentGuess = 5
 				m.matchover = true
-				m.messageString = "You lost, Answer: " + answer
+				m.messageString = "You lost, Answer: " + m.answer
 			}
 			m.currentGuess++
 		}
