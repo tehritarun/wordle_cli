@@ -5,8 +5,9 @@ run:
   # Include test files
   tests: true
 
+issues:
   # Which dirs to skip
-  skip-dirs:
+  exclude-dirs:
     - vendor
 
 linters:
