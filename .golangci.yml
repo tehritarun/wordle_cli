@@ -1,87 +1,37 @@
-run:
-  # Timeout for analysis
-  timeout: 5m
+version: 2
 
-  # Include test files
+run:
+  timeout: 5m
   tests: true
 
-issues:
-  # Which dirs to skip
-  exclude-dirs:
-    - vendor
-
 linters:
-  # Enable specific linters
+  # Use the default enabled linters
   enable:
-    - gofmt
-    - govet
     - errcheck
+    - govet
+    - ineffassign
     - staticcheck
     - unused
-    - gosimple
-    - ineffassign
-    - typecheck
-
-  # Disable noisy or opinionated linters
-  disable:
-    - exhaustive
-    - exhaustruct
-    - gochecknoglobals
-    - gochecknoinits
-    - gomnd
-    - varnamelen
-    - wrapcheck
-    - nlreturn
-    - wsl
 
 linters-settings:
-  gofmt:
-    # Simplify code
-    simplify: true
-
   govet:
-    # Enable all analyzers
     enable-all: true
-
   errcheck:
-    # Report about not checking of errors in type assertions
     check-type-assertions: true
-    # Report about assignment of errors to blank identifier
-    check-blank: false
 
 issues:
-  # Maximum issues count per one linter
+  exclude-dirs:
+    - vendor
   max-issues-per-linter: 50
-
-  # Maximum count of issues with the same text
   max-same-issues: 3
-
-  # Exclude some linters from running on tests files
   exclude-rules:
     - path: _test\.go
       linters:
         - errcheck
-        - dupl
-        - gosec
-
-    # Exclude known false positives
-    - text: "shadow: declaration of \"err\""
-      linters:
-        - govet
-
-  # Show all issues
   exclude-use-default: false
 
 output:
-  # Format: colored-line-number|line-number|json|tab|checkstyle|code-climate
-  formats:
-    - format: colored-line-number
-
-  # Print lines of code with issue
+  format: colored-line-number
   print-issued-lines: true
-
-  # Print linter name in the end of issue text
   print-linter-name: true
-
-  # Sort results by
   sort-results: true

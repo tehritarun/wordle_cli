@@ -18,7 +18,11 @@ func fetchNYTWord() string {
 	if err != nil {
 		panic("error while fetching nyt solution. Error: " + err.Error())
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			panic("error closing response body: " + closeErr.Error())
+		}
+	}()
 	var response nytResponse
 
 	body, err := io.ReadAll(resp.Body)

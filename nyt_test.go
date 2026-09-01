@@ -21,7 +21,9 @@ func TestFetchNYTWord(t *testing.T) {
 
 			// Return a mock response
 			response := nytResponse{Solution: "TESTS"}
-			json.NewEncoder(w).Encode(response)
+			if err := json.NewEncoder(w).Encode(response); err != nil {
+				t.Errorf("Failed to encode response: %v", err)
+			}
 		}))
 		defer server.Close()
 
