@@ -11,7 +11,7 @@ import (
 )
 
 func isValidInput(userInput string) bool {
-	if len(userInput) < 5 {
+	if len(userInput) != 5 {
 		return false
 	}
 
