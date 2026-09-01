@@ -8,9 +8,13 @@ import (
 )
 
 func main() {
-	chosenWord := chooseWord()
+	fetchNyt := false
+	if len(os.Args) > 1 {
+		fetchNyt = os.Args[1] == "-n"
+	}
+	chosenWord := chooseWord(fetchNyt)
 	if !isValidInput(chosenWord) {
-		panic("Invalid word chosen from word file")
+		panic("Invalid word chosen")
 	}
 
 	p := tea.NewProgram(InitialModel(chosenWord))

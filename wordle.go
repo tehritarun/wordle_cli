@@ -23,7 +23,10 @@ func isValidInput(userInput string) bool {
 	return true
 }
 
-func chooseWord() string {
+func chooseWord(fetchNyt bool) string {
+	if fetchNyt {
+		return fetchNYTWord()
+	}
 	randomIndex := rand.IntN(len(words))
 	return words[randomIndex]
 }

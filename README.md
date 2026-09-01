@@ -34,6 +34,13 @@ A stylish, interactive, terminal-based clone of the popular Wordle puzzle game b
 
 4. You have **6 attempts** to find the correct word!
 
+### 🎯 Game Modes
+
+| Command | Description |
+| :--- | :--- |
+| `wordle_cli` | Play with a randomly selected word from the embedded list |
+| `wordle_cli -n` | Play today's official New York Times Wordle puzzle |
+
 ### ⌨️ Keybindings
 
 | Key | Action |
@@ -63,8 +70,11 @@ tar -xzf wordle_cli_*.tar.gz
 # (Optional) Move to your PATH for global access
 sudo mv wordle_cli /usr/local/bin/
 
-# Start the game
+# Start the game (random word)
 wordle_cli
+
+# Play today's New York Times Wordle
+wordle_cli -n
 ```
 
 #### Windows
@@ -73,7 +83,11 @@ wordle_cli
 2. Open Command Prompt or PowerShell in the extracted folder.
 3. Run:
    ```powershell
+   # Random word
    .\wordle_cli.exe
+   
+   # Today's NYT Wordle
+   .\wordle_cli.exe -n
    ```
 
 ---
@@ -117,6 +131,7 @@ wordle_cli/
 ├── go.sum                    # Go module checksums
 ├── LICENSE                   # MIT License
 ├── main.go                   # Application entry point and program runner
+├── nyt.go                    # NYT Wordle fetcher for daily puzzle mode
 ├── wordle.go                 # Game validation logic and color matcher
 ├── wordle_ui.go              # Bubble Tea model, update loops, and Lip Gloss views
 ├── words.go                  # Embedded word list (1,800+ valid 5-letter words)
